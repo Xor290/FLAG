@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Recherche</title>
+</head>
+<body>
+  <h1>Résultat de recherche</h1>
+  <form method="GET">
+    <input type="text" name="q" placeholder="Recherche...">
+    <input type="submit" value="Rechercher">
+  </form>
+
+  <p>Vous avez recherché : <span id="result"></span></p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (q) {
+      // Vulnérabilité XSS ici :
+      document.getElementById("result").innerHTML = q;
+    }
+  </script>
+</body>
+</html>
