@@ -6,6 +6,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
     <title>Login - CTF Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            50: '#f0f9ff',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { 'box-shadow': '0 0 5px #0ea5e9' },
+                            '100%': { 'box-shadow': '0 0 20px #0ea5e9, 0 0 30px #0ea5e9' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -15,7 +46,6 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,25 +54,9 @@
             overflow: hidden;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(1deg); }
-        }
-
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
+            color: #333;
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
@@ -59,7 +73,7 @@
         }
 
         .logo h1 {
-            color: #333;
+            color: white;
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 5px;
@@ -70,7 +84,7 @@
         }
 
         .logo p {
-            color: #666;
+            color: white;
             font-size: 0.9rem;
             opacity: 0.8;
         }
@@ -83,7 +97,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: white;
             font-weight: 500;
             font-size: 0.9rem;
         }
@@ -91,11 +105,12 @@
         .form-group input {
             width: 100%;
             padding: 15px 20px;
-            border: 2px solid #e1e5e9;
+            border: 2px solid #374151;
             border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(17, 24, 39, 0.8);
+            color: white;
         }
 
         .form-group input:focus {
@@ -106,20 +121,7 @@
         }
 
         .form-group input::placeholder {
-            color: #999;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 38px;
-            cursor: pointer;
-            color: #666;
-            transition: color 0.3s ease;
-        }
-
-        .password-toggle:hover {
-            color: #667eea;
+            color: #9CA3AF;
         }
 
         .form-options {
@@ -128,6 +130,7 @@
             align-items: center;
             margin-bottom: 30px;
             font-size: 0.9rem;
+            color: white;
         }
 
         .remember-me {
@@ -195,7 +198,7 @@
             text-align: center;
             margin: 30px 0;
             position: relative;
-            color: #666;
+            color: white;
             font-size: 0.9rem;
         }
 
@@ -211,13 +214,14 @@
         }
 
         .divider span {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(31, 41, 55, 0.95);
             padding: 0 20px;
         }
 
         .register-link {
             text-align: center;
             margin-top: 20px;
+            color: white;
         }
 
         .register-link a {
@@ -289,7 +293,7 @@
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-900 text-white">
     <div class="login-container">
         <div class="logo">
             <h1>CTF Platform</h1>
@@ -320,9 +324,6 @@
             <div class="form-group">
                 <label for="password">Mot de passe</label>
                 <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required>
-                <span class="password-toggle" onclick="togglePassword()">
-                    <i id="eye-icon" class="fa-solid fa-eye"></i>
-                </span>
             </div>
 
             <button type="submit" class="login-btn">
@@ -336,22 +337,6 @@
     </div>
 
     <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const icon = document.getElementById('eye-icon');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-
         function showMessage(message, type = 'error') {
             const errorDiv = document.getElementById('error-message');
             const successDiv = document.getElementById('success-message');
