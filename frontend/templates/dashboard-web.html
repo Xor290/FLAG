@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Challenges Web - CyberChallenge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-gray-900 text-white font-mono">
+
+  <!-- Header -->
+  <header class="bg-gray-900 border-b border-cyber-500/20 p-6 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-gradient-to-br from-cyber-500 to-cyber-700 rounded flex items-center justify-center">
+          <span class="text-white font-bold text-sm">CTF</span>
+        </div>
+        <span class="text-xl font-bold text-cyber-500">CyberChallenge</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span id="user-info" class="text-gray-400"></span>
+        <a href="/" class="text-cyber-500 hover:underline text-sm">← Retour à l'accueil</a>
+      </div>
+    </div>
+  </header>
+
+  
+
+  <!-- Loading Spinner -->
+  <div id="loading" class="flex justify-center items-center py-16">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-cyber-500"></div>
+    <span class="ml-3 text-gray-400">Chargement des challenges...</span>
+  </div>
+
+  <!-- Challenge Cards Container -->
+  <main id="challenges-container" class="py-16 px-6 max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8 hidden">
+    <!-- Les challenges seront injectés ici par JavaScript -->
+  </main>
+
+  <!-- No Challenges Message -->
+  <div id="no-challenges" class="text-center py-16 text-gray-400 hidden">
+    <h2 class="text-2xl font-semibold mb-4">Aucun challenge disponible</h2>
+    <p>Aucun challenge n'est actuellement actif dans la base de données.</p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 border-t border-gray-800 py-10 mt-10">
+    <div class="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
+      © 2025 CyberChallenge. Tous droits réservés.
+    </div>
+  </footer>
+
+  <script>
+    // Fonction pour obtenir la couleur selon la catégorie
+    function getCategoryColor(category) {
+      const colors = {
+        'Web': 'text-red-400',
+        'Reversing': 'text-purple-400',
+        'Crypto': 'text-green-400',
+        'Pwn': 'text-yellow-400',
+        'Forensics': 'text-blue-400',
+        'Misc': 'text-pink-400'
+      };
+      return colors[category] || 'text-gray-400';
+    }
+
+    // Fonction pour obtenir la couleur selon la difficulté
+    function getDifficultyColor(difficulty) {
+      const colors = {
+        'Easy': 'text-green-400',
+        'Medium': 'text-yellow-400',
+        'Hard': 'text-red-400'
+      };
+      return colors[difficulty] || 'text-gray-400';
+    }
+
+    // Fonction pour charger les challenges depuis l'API
+    // Fonction pour charger les challenges Web depuis l'API
+    async function loadChallenges() {
+      try {
+        // Option 1: Utiliser le paramètre category
+        const response = await fetch("/api/challenges?category=Web", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        // Option 2: Utiliser la route spécifique (si vous l'avez créée)
+        // const response = await fetch("/api/challenges/web", {
+        //   method: "GET",
+        //   credentials: "include",
+        // });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const challenges = data.challenges || [];
+
+        // Masquer le spinner de chargement
+        document.getElementById('loading').classList.add('hidden');
+
+        if (challenges.length === 0) {
+          // Afficher le message "aucun challenge"
+          document.getElementById('no-challenges').classList.remove('hidden');
+          // Modifier le message pour être spécifique aux challenges Web
+          document.getElementById('no-challenges').innerHTML = `
+            <h2 class="text-2xl font-semibold mb-4">Aucun challenge Web disponible</h2>
+            <p>Aucun challenge de la catégorie Web n'est actuellement actif dans la base de données.</p>
+          `;
+          return;
+        }
+
+        // Afficher le conteneur des challenges
+        document.getElementById('challenges-container').classList.remove('hidden');
+
+        // Calculer le total des points pour les challenges Web
+        const totalPoints = challenges.reduce((sum, challenge) => sum + (challenge.points || 0), 0);
+        
+        // Générer les cartes de challenges (tous seront de catégorie Web maintenant)
+        const container = document.getElementById('challenges-container');
+        container.innerHTML = challenges.map(challenge => `
+          <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-cyber-500 transition-all group">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold ${getCategoryColor(challenge.category)}">${challenge.name}</h2>
+              <div class="flex flex-col items-end">
+                <span class="text-sm ${getDifficultyColor(challenge.difficulty)}">${challenge.difficulty}</span>
+                <span class="text-xs text-gray-500">${challenge.category}</span>
+              </div>
+            </div>
+            <p class="text-gray-400 mb-4">${challenge.description}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-cyber-400 font-semibold">${challenge.points} points</span>
+              <button class="start-btn px-4 py-2 bg-cyber-500 hover:bg-cyber-600 text-white rounded transition" 
+                      data-challenge-id="${challenge.id}">
+                Commencer
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        // Ajouter les gestionnaires d'événements aux nouveaux boutons
+        addButtonListeners();
+
+      } catch (error) {
+        console.error("Erreur lors du chargement des challenges Web:", error);
+        document.getElementById('loading').innerHTML = `
+          <div class="text-center text-red-400">
+            <p class="text-lg font-semibold">Erreur lors du chargement des challenges Web</p>
+            <p class="text-sm text-gray-400 mt-2">${error.message}</p>
+            <button onclick="loadChallenges()" class="mt-4 px-4 py-2 bg-cyber-500 hover:bg-cyber-600 text-white rounded transition">
+              Réessayer
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // Fonction pour ajouter les gestionnaires d'événements aux boutons
+    function addButtonListeners() {
+      document.querySelectorAll('.start-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+          const challengeId = button.getAttribute('data-challenge-id');
+
+          try {
+            // Désactiver le bouton pendant la requête
+            button.disabled = true;
+            button.textContent = "Création...";
+
+            const response = await fetch("/api/instances", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({
+                challenge_id: parseInt(challengeId),
+              }),
+            });
+
+            if (!response.ok) {
+              const contentType = response.headers.get("content-type");
+              let errorMessage = "Erreur inconnue";
+              
+              if (contentType && contentType.includes("application/json")) {
+                const err = await response.json();
+                errorMessage = err.error || err.message || "Erreur inconnue";
+              } else {
+                errorMessage = await response.text();
+              }
+              
+              if (response.status === 401) {
+                alert("Session expirée. Veuillez vous reconnecter.");
+                window.location.href = "/login";
+                return;
+              }
+              
+              alert("Erreur : " + errorMessage);
+              return;
+            }
+
+            const instance = await response.json();
+            alert(`Instance créée avec succès ! ID: ${instance.instance.id}`);
+            
+          } catch (error) {
+            console.error("Erreur complète:", error);
+            alert("Erreur lors de la création de l'instance: " + error.message);
+          } finally {
+            // Réactiver le bouton
+            button.disabled = false;
+            button.textContent = "Commencer";
+          }
+        });
+      });
+    }
+
+    // Vérifier l'authentification au chargement de la page
+    async function checkAuth() {
+      try {
+        const response = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          document.getElementById("user-info").textContent = `Connecté : ${data.user.username}`;
+          return true;
+        } else {
+          alert("Vous devez être connecté pour accéder aux challenges.");
+          window.location.href = "/login";
+          return false;
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification d'authentification:", error);
+        alert("Erreur de connexion. Veuillez vous reconnecter.");
+        window.location.href = "/login";
+        return false;
+      }
+    }
+
+    // Initialisation au chargement de la page
+    document.addEventListener('DOMContentLoaded', async () => {
+      const isAuthenticated = await checkAuth();
+      if (isAuthenticated) {
+        await loadChallenges();
+      }
+    });
+  </script>
+
+</body>
+</html>

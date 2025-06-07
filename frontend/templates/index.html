@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Platform - Capture The Flag</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            50: '#f0f9ff',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { 'box-shadow': '0 0 5px #0ea5e9' },
+                            '100%': { 'box-shadow': '0 0 20px #0ea5e9, 0 0 30px #0ea5e9' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .matrix-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(14, 165, 233, 0.1) 50%, transparent 70%);
+            animation: matrix-slide 3s infinite;
+        }
+        
+        @keyframes matrix-slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .cyber-grid {
+            background-image: 
+                linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-mono overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-gray-900/90 backdrop-blur-sm border-b border-cyber-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-cyber-500 to-cyber-700 rounded flex items-center justify-center">
+                      <span class="text-white font-bold text-sm">CTF</span>
+                    </div>
+                    <span class="text-xl font-bold text-cyber-500">CyberChallenge</span>
+                </div>
+                
+                
+                <!-- Zone utilisateur dynamique -->
+                <div id="user-section">
+                    <!-- Par défaut, boutons de connexion (masqués si utilisateur connecté) -->
+                    <div id="auth-buttons" class="flex space-x-4">
+                        <button id="login-btn" class="px-4 py-2 text-cyber-400 border border-cyber-400 rounded-lg hover:bg-cyber-400 hover:text-white transition-all duration-300">
+                            Connexion
+                        </button>
+                        <button id="register-btn" class="px-4 py-2 bg-gradient-to-r from-cyber-500 to-cyber-600 rounded-lg hover:from-cyber-600 hover:to-cyber-700 transition-all duration-300 animate-glow">
+                            Inscription
+                        </button>
+                    </div>
+                    
+                    <!-- Informations utilisateur connecté (masquées par défaut) -->
+                    <div id="user-info" class="hidden flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-gray-400 text-sm">Bienvenue,</span>
+                            <span id="username" class="text-cyber-400 font-semibold"></span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-yellow-400 text-sm font-semibold" id="user-score">0 pts</span>
+                        </div>
+                        <button id="logout-btn" class="px-3 py-1 text-red-400 border border-red-400/50 rounded hover:bg-red-400 hover:text-white transition-all duration-300 text-sm">
+                            Déconnexion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center cyber-grid">
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
+        
+        <!-- Animated background elements -->
+        <div class="absolute top-20 left-10 w-20 h-20 border-2 border-cyber-500/30 rounded-full animate-pulse-slow"></div>
+        <div class="absolute top-1/2 left-20 w-16 h-16 border border-cyber-600/40 transform rotate-45 animate-pulse"></div>
+        
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-4">
+            <div class="mb-8">
+                <h1 class="text-6xl md:text-8xl font-bold mb-4">
+                    <span class="bg-gradient-to-r from-cyber-400 via-blue-500 to-purple-600 bg-clip-text text-transparent animate-pulse">
+                        CAPTURE
+                    </span>
+                </h1>
+                <h1 class="text-6xl md:text-8xl font-bold mb-8">
+                    <span class="bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent animate-pulse">
+                        THE FLAG
+                    </span>
+                </h1>
+            </div>
+            
+            <p class="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                Testez vos compétences en <span class="text-cyber-400 font-semibold">cybersécurité</span> 
+                à travers des challenges passionnants
+            </p>
+
+            <!-- Statistiques dynamiques - Parfaitement centrées -->
+            <div class="flex justify-center mt-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-lg">
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-cyber-500/20 text-center">
+                        <div class="text-3xl font-bold text-cyber-400" id="challenges-count">-</div>
+                        <div class="text-gray-400 text-sm">Challenges</div>
+                    </div>
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-cyber-500/20 text-center">
+                        <div class="text-3xl font-bold text-yellow-400" id="submissions-count">-</div>
+                        <div class="text-gray-400 text-sm">Soumissions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="challenges" class="py-20 bg-gray-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="bg-gradient-to-r from-cyber-400 to-purple-500 bg-clip-text text-transparent">
+                        Catégories de Challenges
+                    </span>
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Explorez différents domaines de la cybersécurité
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Web Security -->
+                <div class="group bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyber-500 transition-all duration-300 transform hover:scale-105 matrix-bg relative overflow-hidden cursor-pointer" data-category="web">
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center mb-4">
+                            <span class="text-2xl">🌐</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-red-400">Web Security</h3>
+                        <p class="text-gray-400 mb-4">SQL Injection, XSS, CSRF et autres vulnérabilités web</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500"><span id="web-count">-</span> challenges</span>
+                            <span class="text-cyber-400 font-semibold">→</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cryptography -->
+                <div class="group bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyber-500 transition-all duration-300 transform hover:scale-105 matrix-bg relative overflow-hidden cursor-pointer" data-category="crypto">
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-4">
+                            <span class="text-2xl">🔐</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">Cryptographie</h3>
+                        <p class="text-gray-400 mb-4">Chiffrement, hash, signatures numériques</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500"><span id="crypto-count">-</span> challenges</span>
+                            <span class="text-cyber-400 font-semibold">→</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reverse Engineering -->
+                <div class="group bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyber-500 transition-all duration-300 transform hover:scale-105 matrix-bg relative overflow-hidden cursor-pointer" data-category="reverse">
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center mb-4">
+                            <span class="text-2xl">⚙️</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-green-400">Reverse Engineering</h3>
+                        <p class="text-gray-400 mb-4">Analyse de binaires, désassemblage</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500"><span id="reverse-count">-</span> challenges</span>
+                            <span class="text-cyber-400 font-semibold">→</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Forensics -->
+                <div class="group bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyber-500 transition-all duration-300 transform hover:scale-105 matrix-bg relative overflow-hidden cursor-pointer" data-category="forensics">
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mb-4">
+                            <span class="text-2xl">🔍</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-yellow-400">Forensics</h3>
+                        <p class="text-gray-400 mb-4">Analyse de fichiers, récupération de données</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500"><span id="forensics-count">-</span> challenges</span>
+                            <span class="text-cyber-400 font-semibold">→</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Network -->
+                <div class="group bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyber-500 transition-all duration-300 transform hover:scale-105 matrix-bg relative overflow-hidden cursor-pointer" data-category="network">
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-4">
+                            <span class="text-2xl">🌐</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-purple-400">Network</h3>
+                        <p class="text-gray-400 mb-4">Analyse de trafic, protocoles réseau</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500"><span id="network-count">-</span> challenges</span>
+                            <span class="text-cyber-400 font-semibold">→</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Steganography -->
+                <div class="group bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-cyber-500 transition-all duration-300 transform hover:scale-105 matrix-bg relative overflow-hidden cursor-pointer" data-category="stego">
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+                            <span class="text-2xl">🖼️</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-indigo-400">Stéganographie</h3>
+                        <p class="text-gray-400 mb-4">Dissimulation de données dans des médias</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500"><span id="stego-count">-</span> challenges</span>
+                            <span class="text-cyber-400 font-semibold">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-cyber-400 to-cyber-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">CTF</span>
+                        </div>
+                        <span class="text-xl font-bold text-cyber-400">CyberChallenge</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Plateforme de Capture The Flag pour apprendre la cybersécurité de manière ludique.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Challenges</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Web Security</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Cryptographie</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Reverse Engineering</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Forensics</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Communauté</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Discord</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Forum</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Write-ups</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Règles</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Ressources</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Tutoriels</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">API</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2025 CyberChallenge CTF Platform. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration de l'API
+        const API_BASE_URL = '/api'; // Ajustez selon votre configuration
+
+        // Fonction pour récupérer les statistiques depuis l'API
+        async function fetchStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.stats;
+                } else {
+                    console.error('Erreur lors de la récupération des statistiques:', data);
+                    return null;
+                }
+            } catch (error) {
+                console.error('Erreur réseau lors de la récupération des statistiques:', error);
+                return null;
+            }
+        }
+
+        // Fonction pour mettre à jour les compteurs avec les vraies données
+        async function updateStatsDisplay() {
+            const stats = await fetchStats();
+            
+            if (stats) {
+                // Mettre à jour les statistiques générales
+                animateCounter('challenges-count', stats.total_challenges);
+                animateCounter('users-count', stats.total_users);
+                animateCounter('submissions-count', stats.total_submissions);
+                
+                // Mettre à jour les compteurs par catégorie
+                updateCategoryCount('web-count', stats.web_challenges);
+                updateCategoryCount('crypto-count', stats.crypto_challenges);
+                updateCategoryCount('reverse-count', stats.reverse_challenges);
+                updateCategoryCount('forensics-count', stats.forensics_challenges);
+                updateCategoryCount('network-count', stats.network_challenges);
+                updateCategoryCount('stego-count', stats.stego_challenges);
+            } else {
+                // En cas d'échec, afficher des valeurs par défaut
+                document.getElementById('challenges-count').textContent = '0';
+                document.getElementById('users-count').textContent = '0';
+                document.getElementById('submissions-count').textContent = '0';
+                
+                ['web', 'crypto', 'reverse', 'forensics', 'network', 'stego'].forEach(category => {
+                    document.getElementById(`${category}-count`).textContent = '0';
+                });
+            }
+        }
+
+        // Fonction pour mettre à jour le compteur d'une catégorie spécifique
+        function updateCategoryCount(elementId, count) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = count;
+            }
+        }
+
+        // Fonction pour vérifier et afficher l'état de connexion
+        function updateUserInterface() {
+            const userId = localStorage.getItem("user_id");
+            const username = localStorage.getItem("username");
+            const userScore = localStorage.getItem("user_score") || "0";
+            
+            const authButtons = document.getElementById("auth-buttons");
+            const userInfo = document.getElementById("user-info");
+            const usernameElement = document.getElementById("username");
+            const scoreElement = document.getElementById("user-score");
+            
+            if (userId && username) {
+                // Utilisateur connecté
+                authButtons.classList.add("hidden");
+                userInfo.classList.remove("hidden");
+                usernameElement.textContent = username;
+                scoreElement.textContent = `${userScore} pts`;
+            } else {
+                // Utilisateur non connecté
+                authButtons.classList.remove("hidden");
+                userInfo.classList.add("hidden");
+            }
+        }
+        
+        // Fonction de déconnexion
+        function logout() {
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("username");
+            localStorage.removeItem("user_score");
+            localStorage.removeItem("token");
+            updateUserInterface();
+            alert("Vous avez été déconnecté avec succès.");
+        }
+        
+        // Fonction pour rediriger vers les challenges selon la catégorie
+        function handleChallengeNavigation(category = null) {
+            const userId = localStorage.getItem("user_id");
+            
+            if (!userId) {
+                alert("Veuillez vous connecter pour accéder aux challenges.");
+                window.location.href = "/login";
+                return;
+            }
+            
+            // Mapping des catégories vers les routes
+            const categoryRoutes = {
+                'web': '/dashboard-web',
+                'reverse': '/dashboard-reverse', 
+                'forensics': '/dashboard-forensics',
+                'crypto': '/dashboard-crypto',
+                'network': '/dashboard-network',
+                'stego': '/dashboard-stego'
+            };
+            
+            // Rediriger vers la page appropriée
+            if (category && categoryRoutes[category]) {
+                window.location.href = categoryRoutes[category];
+            } else {
+                // Route par défaut pour tous les challenges
+                window.location.href = '/dashboard-web';
+            }
+        }
+
+        // Animation des compteurs améliorée
+        function animateCounter(elementId, target) {
+            const element = document.getElementById(elementId);
+            if (!element || target === undefined) return;
+            
+            let current = 0;
+            const duration = 2000; // 2 secondes
+            const increment = target / (duration / 16); // 60 FPS
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 16);
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUserInterface();
+            
+            // Gestionnaire pour le bouton de déconnexion
+            const logoutBtn = document.getElementById("logout-btn");
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", logout);
+            }
+            
+            // Gestionnaires pour les boutons de navigation
+            const loginBtn = document.getElementById("login-btn");
+            if (loginBtn) {
+                loginBtn.addEventListener("click", () => {
+                    window.location.href = "/login";
+                });
+            }
+            
+            const registerBtn = document.getElementById("register-btn");
+            if (registerBtn) {
+                registerBtn.addEventListener("click", () => {
+                    window.location.href = "/signin";
+                });
+            }
+            
+            // Gestionnaires pour les cartes de catégories
+            document.querySelectorAll('[data-category]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const category = card.getAttribute('data-category');
+                    handleChallengeNavigation(category);
+                });
+            });
+            
+            // Charger et afficher les statistiques réelles
+            setTimeout(() => {
+                updateStatsDisplay();
+            }, 500);
+        });
+
+        // Actualiser les statistiques toutes les 5 minutes
+        setInterval(() => {
+            updateStatsDisplay();
+        }, 300000); // 5 minutes
+
+        // Smooth scrolling pour les liens d'ancrage
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
