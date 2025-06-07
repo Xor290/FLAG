@@ -16,6 +16,25 @@
               600: '#0284c7',
               700: '#0369a1'
             }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-in-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+            'pulse-cyber': 'pulseCyber 2s infinite'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' }
+            },
+            pulseCyber: {
+              '0%, 100%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.3)' },
+              '50%': { boxShadow: '0 0 30px rgba(14, 165, 233, 0.6)' }
+            }
           }
         }
       }
@@ -24,6 +43,19 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
     .font-mono { font-family: 'JetBrains Mono', monospace; }
+    
+    .cyber-glow {
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+    }
+    
+    .cyber-glow:hover {
+      box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+    }
+    
+    .backdrop-blur-cyber {
+      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.8);
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white font-mono">
@@ -44,7 +76,109 @@
     </div>
   </header>
 
-  
+  <!-- Success Popup Modal -->
+  <div id="success-modal" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 backdrop-blur-cyber animate-fade-in"></div>
+    
+    <!-- Modal Content -->
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="relative bg-gray-800 border border-cyber-500/30 rounded-2xl p-8 max-w-lg w-full animate-slide-up cyber-glow">
+        <!-- Close Button -->
+        <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        
+        <!-- Success Icon -->
+        <div class="flex justify-center mb-6">
+          <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center animate-pulse-cyber">
+            <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+        </div>
+        
+        <!-- Title -->
+        <h2 class="text-2xl font-bold text-center text-cyber-400 mb-4">
+          Instance Créée !
+        </h2>
+        
+        <!-- Instance Info -->
+        <div class="space-y-4 mb-6">
+          <div class="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-400 text-sm">Instance ID:</span>
+              <span id="instance-id" class="text-cyber-400 font-bold"></span>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-400 text-sm">Challenge:</span>
+              <span id="challenge-name" class="text-white font-semibold"></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400 text-sm">Status:</span>
+              <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">
+                Actif
+              </span>
+            </div>
+          </div>
+          
+          <!-- URL Section -->
+          <div class="bg-gradient-to-r from-cyber-500/10 to-cyber-600/10 rounded-lg p-4 border border-cyber-500/30">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-cyber-400 font-semibold flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+                URL d'accès:
+              </span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <input id="challenge-url" type="text" readonly 
+                     class="flex-1 bg-gray-900 text-white px-3 py-2 rounded border border-gray-600 text-sm font-mono">
+              <button id="copy-url" class="px-3 py-2 bg-cyber-500 hover:bg-cyber-600 text-white rounded transition-colors text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Flag Submission Section -->
+          <div class="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-yellow-500/30">
+            <div class="flex items-center mb-3">
+              <svg class="w-5 h-5 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 2H21l-3 6 3 6h-8.5l-1-2H5a2 2 0 00-2 2zm9-13.5V9"></path>
+              </svg>
+              <span class="text-yellow-400 font-semibold">Soumettre le Flag</span>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-2">
+                <input id="flag-input" type="text" placeholder="FLAG{...}" 
+                       class="flex-1 bg-gray-900 text-white px-3 py-2 rounded border border-gray-600 text-sm font-mono focus:border-yellow-500 focus:outline-none">
+                <button id="submit-flag" class="px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded transition-all text-sm font-semibold">
+                  Valider
+                </button>
+              </div>
+              <!-- Message de statut pour le flag -->
+              <div id="flag-status" class="text-sm hidden"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex space-x-3">
+          <button id="open-challenge" class="flex-1 bg-gradient-to-r from-cyber-500 to-cyber-600 hover:from-cyber-600 hover:to-cyber-700 text-white py-3 px-4 rounded-lg font-semibold transition-all transform hover:scale-105">
+            Ouvrir le Challenge
+          </button>
+          <button id="close-modal-btn" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Loading Spinner -->
   <div id="loading" class="flex justify-center items-center py-16">
@@ -71,6 +205,11 @@
   </footer>
 
   <script>
+    // Variables globales pour le modal
+    let currentChallengeUrl = '';
+    let currentChallengeName = '';
+    let currentChallengeId = '';
+
     // Fonction pour obtenir la couleur selon la catégorie
     function getCategoryColor(category) {
       const colors = {
@@ -94,21 +233,189 @@
       return colors[difficulty] || 'text-gray-400';
     }
 
-    // Fonction pour charger les challenges depuis l'API
+    // Fonction pour afficher le modal de succès
+    function showSuccessModal(instance, challengeName, challengeId) {
+      currentChallengeName = challengeName;
+      currentChallengeId = challengeId;
+      // Utiliser l'URL retournée par l'API
+      currentChallengeUrl = instance.access_url || 'URL non disponible';
+
+      // Remplir les informations
+      document.getElementById('instance-id').textContent = instance.id;
+      document.getElementById('challenge-name').textContent = challengeName;
+      document.getElementById('challenge-url').value = currentChallengeUrl;
+
+      // Réinitialiser le champ de flag et le statut
+      document.getElementById('flag-input').value = '';
+      document.getElementById('flag-status').className = 'text-sm hidden';
+      document.getElementById('flag-status').textContent = '';
+
+      // Afficher le modal
+      document.getElementById('success-modal').classList.remove('hidden');
+    }
+
+    // Fonction pour fermer le modal
+    function closeModal() {
+      document.getElementById('success-modal').classList.add('hidden');
+    }
+
+    // Fonction pour copier l'URL
+    function copyUrl() {
+      const urlInput = document.getElementById('challenge-url');
+      urlInput.select();
+      urlInput.setSelectionRange(0, 99999); // Pour mobile
+      
+      try {
+        document.execCommand('copy');
+        
+        // Feedback visuel
+        const copyBtn = document.getElementById('copy-url');
+        const originalHTML = copyBtn.innerHTML;
+        copyBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        `;
+        copyBtn.classList.add('bg-green-500');
+        
+        setTimeout(() => {
+          copyBtn.innerHTML = originalHTML;
+          copyBtn.classList.remove('bg-green-500');
+        }, 2000);
+        
+      } catch (err) {
+        console.error('Erreur lors de la copie:', err);
+      }
+    }
+
+    // Fonction pour ouvrir le challenge dans un nouvel onglet
+    function openChallenge() {
+      if (currentChallengeUrl && currentChallengeUrl !== 'URL non disponible') {
+        window.open(currentChallengeUrl, '_blank');
+      } else {
+        alert('URL du challenge non disponible');
+      }
+    }
+
+    // Fonction pour soumettre le flag
+    async function submitFlag() {
+      const flagInput = document.getElementById('flag-input');
+      const submitBtn = document.getElementById('submit-flag');
+      const statusDiv = document.getElementById('flag-status');
+      const flag = flagInput.value.trim();
+
+      if (!flag) {
+        statusDiv.className = 'text-sm text-red-400';
+        statusDiv.textContent = 'Veuillez saisir un flag';
+        statusDiv.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        // Désactiver le bouton pendant la requête
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Vérification...';
+        submitBtn.classList.add('opacity-50');
+
+        // Masquer le statut précédent
+        statusDiv.classList.add('hidden');
+
+        const response = await fetch('/api/flags/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            challenge_id: parseInt(currentChallengeId),
+            flag: flag
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Flag correct
+          statusDiv.className = 'text-sm text-green-400 flex items-center';
+          statusDiv.innerHTML = `
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Bravo ! Flag correct ! (+${data.points || 0} points)
+          `;
+          statusDiv.classList.remove('hidden');
+          
+          // Désactiver le champ de saisie
+          flagInput.disabled = true;
+          flagInput.classList.add('opacity-50');
+          
+        } else {
+          // Flag incorrect ou erreur
+          statusDiv.className = 'text-sm text-red-400 flex items-center';
+          statusDiv.innerHTML = `
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            ${data.error || 'Flag incorrect'}
+          `;
+          statusDiv.classList.remove('hidden');
+        }
+
+      } catch (error) {
+        console.error('Erreur lors de la soumission du flag:', error);
+        statusDiv.className = 'text-sm text-red-400';
+        statusDiv.textContent = 'Erreur lors de la vérification du flag';
+        statusDiv.classList.remove('hidden');
+      } finally {
+        // Réactiver le bouton si le flag n'était pas correct
+        if (!flagInput.disabled) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Valider';
+          submitBtn.classList.remove('opacity-50');
+        } else {
+          submitBtn.textContent = 'Validé ✓';
+          submitBtn.classList.add('bg-green-500');
+        }
+      }
+    }
+
+    // Event listeners pour le modal
+    document.addEventListener('DOMContentLoaded', () => {
+      // Fermer le modal
+      document.getElementById('close-modal').addEventListener('click', closeModal);
+      document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+      
+      // Copier l'URL
+      document.getElementById('copy-url').addEventListener('click', copyUrl);
+      
+      // Ouvrir le challenge
+      document.getElementById('open-challenge').addEventListener('click', openChallenge);
+      
+      // Soumettre le flag
+      document.getElementById('submit-flag').addEventListener('click', submitFlag);
+      
+      // Soumettre le flag avec Enter
+      document.getElementById('flag-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          submitFlag();
+        }
+      });
+      
+      // Fermer en cliquant sur le backdrop
+      document.getElementById('success-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'success-modal') {
+          closeModal();
+        }
+      });
+    });
+
     // Fonction pour charger les challenges Web depuis l'API
     async function loadChallenges() {
       try {
-        // Option 1: Utiliser le paramètre category
         const response = await fetch("/api/challenges?category=Web", {
           method: "GET",
           credentials: "include",
         });
-
-        // Option 2: Utiliser la route spécifique (si vous l'avez créée)
-        // const response = await fetch("/api/challenges/web", {
-        //   method: "GET",
-        //   credentials: "include",
-        // });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -123,7 +430,6 @@
         if (challenges.length === 0) {
           // Afficher le message "aucun challenge"
           document.getElementById('no-challenges').classList.remove('hidden');
-          // Modifier le message pour être spécifique aux challenges Web
           document.getElementById('no-challenges').innerHTML = `
             <h2 class="text-2xl font-semibold mb-4">Aucun challenge Web disponible</h2>
             <p>Aucun challenge de la catégorie Web n'est actuellement actif dans la base de données.</p>
@@ -134,10 +440,7 @@
         // Afficher le conteneur des challenges
         document.getElementById('challenges-container').classList.remove('hidden');
 
-        // Calculer le total des points pour les challenges Web
-        const totalPoints = challenges.reduce((sum, challenge) => sum + (challenge.points || 0), 0);
-        
-        // Générer les cartes de challenges (tous seront de catégorie Web maintenant)
+        // Générer les cartes de challenges
         const container = document.getElementById('challenges-container');
         container.innerHTML = challenges.map(challenge => `
           <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-cyber-500 transition-all group">
@@ -152,7 +455,7 @@
             <div class="flex items-center justify-between">
               <span class="text-cyber-400 font-semibold">${challenge.points} points</span>
               <button class="start-btn px-4 py-2 bg-cyber-500 hover:bg-cyber-600 text-white rounded transition" 
-                      data-challenge-id="${challenge.id}">
+                      data-challenge-id="${challenge.id}" data-challenge-name="${challenge.name}">
                 Commencer
               </button>
             </div>
@@ -181,11 +484,13 @@
       document.querySelectorAll('.start-btn').forEach(button => {
         button.addEventListener('click', async () => {
           const challengeId = button.getAttribute('data-challenge-id');
+          const challengeName = button.getAttribute('data-challenge-name');
 
           try {
             // Désactiver le bouton pendant la requête
             button.disabled = true;
             button.textContent = "Création...";
+            button.classList.add('opacity-50');
 
             const response = await fetch("/api/instances", {
               method: "POST",
@@ -205,6 +510,13 @@
               if (contentType && contentType.includes("application/json")) {
                 const err = await response.json();
                 errorMessage = err.error || err.message || "Erreur inconnue";
+                
+                // Gestion spéciale pour les instances existantes
+                if (response.status === 409 && err.instance) {
+                  // Une instance existe déjà, l'afficher dans le modal
+                  showSuccessModal(err.instance, challengeName, challengeId);
+                  return;
+                }
               } else {
                 errorMessage = await response.text();
               }
@@ -219,8 +531,11 @@
               return;
             }
 
-            const instance = await response.json();
-            alert(`Instance créée avec succès ! ID: ${instance.instance.id}`);
+            const data = await response.json();
+            const instance = data.instance;
+            
+            // Afficher le modal de succès avec l'instance créée
+            showSuccessModal(instance, challengeName, challengeId);
             
           } catch (error) {
             console.error("Erreur complète:", error);
@@ -229,6 +544,7 @@
             // Réactiver le bouton
             button.disabled = false;
             button.textContent = "Commencer";
+            button.classList.remove('opacity-50');
           }
         });
       });
