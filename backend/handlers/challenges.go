@@ -385,8 +385,31 @@ func CreateInstance(c *gin.Context) {
 		return
 	}
 
+	// Mettre à jour l'ID de l'instance et le statut
 	instance.ID = instanceID
-	c.JSON(http.StatusCreated, gin.H{"instance": instance})
+	instance.Status = "running"
+
+	// Préparer la réponse avec l'URL d'accès
+	response := gin.H{
+		"success": true,
+		"instance": gin.H{
+			"id":           instance.ID,
+			"user_id":      instance.UserID,
+			"challenge_id": instance.ChallengeID,
+			"status":       instance.Status,
+			"pod_name":     instance.PodName,
+			"service_name": instance.ServiceName,
+			"access_url":   instance.AccessURL,
+			"external_port": instance.ExternalPort,
+			"internal_port": instance.InternalPort,
+			"namespace":    instance.Namespace,
+			"created_at":   time.Now().Format(time.RFC3339),
+		},
+		"message": "Instance créée avec succès",
+	}
+
+	log.Printf("Instance créée avec succès: ID=%d, URL=%s", instance.ID, instance.AccessURL)
+	c.JSON(http.StatusCreated, response)
 }
 
 // DeleteInstance supprime une instance
