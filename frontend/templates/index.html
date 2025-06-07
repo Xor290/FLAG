@@ -61,6 +61,12 @@
                 linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
             background-size: 50px 50px;
         }
+        .logo{
+            margin-bottom:20px;
+        }
+        .logo_head {
+            margin-top: 3px;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white font-mono overflow-x-hidden">
@@ -68,7 +74,7 @@
     <nav class="fixed top-0 w-full z-50 bg-gray-900/90 backdrop-blur-sm border-b border-cyber-500/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 logo_head">
                     <div class="w-8 h-8 bg-gradient-to-br from-cyber-500 to-cyber-700 rounded flex items-center justify-center">
                       <span class="text-white font-bold text-sm">CTF</span>
                     </div>
@@ -262,11 +268,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-4 gap-8">
                 <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-gradient-to-br from-cyber-400 to-cyber-600 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-bold text-sm">CTF</span>
+                    <div class="flex items-center space-x-3 logo">
+                        <div class="w-8 h-8 bg-gradient-to-br from-cyber-500 to-cyber-700 rounded flex items-center justify-center">
+                          <span class="text-white font-bold text-sm">CTF</span>
                         </div>
-                        <span class="text-xl font-bold text-cyber-400">CyberChallenge</span>
+                        <span class="text-xl font-bold text-cyber-500">CyberChallenge</span>
                     </div>
                     <p class="text-gray-400 text-sm">
                         Plateforme de Capture The Flag pour apprendre la cybersécurité de manière ludique.
@@ -276,10 +282,10 @@
                 <div>
                     <h4 class="font-semibold text-white mb-4">Challenges</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Web Security</a></li>
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Cryptographie</a></li>
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Reverse Engineering</a></li>
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Forensics</a></li>
+                        <li><a href="/dashboard-web" class="hover:text-cyber-400 transition-colors">Web Security</a></li>
+                        <li><a href="/dashboard-crypto" class="hover:text-cyber-400 transition-colors">Cryptographie</a></li>
+                        <li><a href="/dashboard-reverse" class="hover:text-cyber-400 transition-colors">Reverse Engineering</a></li>
+                        <li><a href="/dashboard-forensics" class="hover:text-cyber-400 transition-colors">Forensics</a></li>
                     </ul>
                 </div>
                 
@@ -287,19 +293,34 @@
                     <h4 class="font-semibold text-white mb-4">Communauté</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
                         <li><a href="#" class="hover:text-cyber-400 transition-colors">Discord</a></li>
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Forum</a></li>
+                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Telegram</a></li>
                         <li><a href="#" class="hover:text-cyber-400 transition-colors">Write-ups</a></li>
                         <li><a href="#" class="hover:text-cyber-400 transition-colors">Règles</a></li>
                     </ul>
                 </div>
-                
                 <div>
-                    <h4 class="font-semibold text-white mb-4">Ressources</h4>
+                    <h4 class="font-semibold text-white mb-4">Activité</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Documentation</a></li>
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Tutoriels</a></li>
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">API</a></li>
-                        <li><a href="#" class="hover:text-cyber-400 transition-colors">Support</a></li>
+                        <li>
+                            <a href="#" class="hover:text-cyber-400 transition-colors flex items-center gap-2">
+                                Événements à venir
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="hover:text-cyber-400 transition-colors flex items-center gap-2">
+                                Rejoindre la communauté
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="hover:text-cyber-400 transition-colors flex items-center gap-2">
+                                Proposer une collaboration
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="hover:text-cyber-400 transition-colors flex items-center gap-2">
+                                Devenir sponsor officiel
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -369,66 +390,113 @@
             }
         }
 
-        // Fonction pour vérifier et afficher l'état de connexion
-        function updateUserInterface() {
-            const userId = localStorage.getItem("user_id");
-            const username = localStorage.getItem("username");
-            const userScore = localStorage.getItem("user_score") || "0";
-            
-            const authButtons = document.getElementById("auth-buttons");
-            const userInfo = document.getElementById("user-info");
-            const usernameElement = document.getElementById("username");
-            const scoreElement = document.getElementById("user-score");
-            
-            if (userId && username) {
-                // Utilisateur connecté
-                authButtons.classList.add("hidden");
-                userInfo.classList.remove("hidden");
-                usernameElement.textContent = username;
-                scoreElement.textContent = `${userScore} pts`;
-            } else {
-                // Utilisateur non connecté
+        async function updateUserInterface() {
+            try {
+                // Vérifier l'état de connexion via l'API
+                const response = await fetch('/api/auth/me', {
+                    method: 'GET',
+                    credentials: 'include' // Important pour envoyer les cookies de session
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const user = data.user;
+                    
+                    // Utilisateur connecté
+                    const authButtons = document.getElementById("auth-buttons");
+                    const userInfo = document.getElementById("user-info");
+                    const usernameElement = document.getElementById("username");
+                    const scoreElement = document.getElementById("user-score");
+                    
+                    authButtons.classList.add("hidden");
+                    userInfo.classList.remove("hidden");
+                    usernameElement.textContent = user.username;
+                    scoreElement.textContent = `0 pts`; // Vous pouvez ajouter le score dans votre API
+                    
+                    return true; // Utilisateur connecté
+                } else {
+                    // Utilisateur non connecté
+                    const authButtons = document.getElementById("auth-buttons");
+                    const userInfo = document.getElementById("user-info");
+                    
+                    authButtons.classList.remove("hidden");
+                    userInfo.classList.add("hidden");
+                    
+                    return false; // Utilisateur non connecté
+                }
+            } catch (error) {
+                console.error('Erreur lors de la vérification de l\'authentification:', error);
+                // En cas d'erreur, considérer comme non connecté
+                const authButtons = document.getElementById("auth-buttons");
+                const userInfo = document.getElementById("user-info");
+                
                 authButtons.classList.remove("hidden");
                 userInfo.classList.add("hidden");
+                
+                return false; // Erreur = non connecté
             }
         }
-        
-        // Fonction de déconnexion
-        function logout() {
-            localStorage.removeItem("user_id");
-            localStorage.removeItem("username");
-            localStorage.removeItem("user_score");
-            localStorage.removeItem("token");
-            updateUserInterface();
-            alert("Vous avez été déconnecté avec succès.");
+
+        // Modifier aussi la fonction logout pour appeler l'API
+        async function logout() {
+            try {
+                const response = await fetch('/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    // Nettoyer aussi localStorage au cas où
+                    localStorage.clear();
+                    updateUserInterface();
+                    alert("Vous avez été déconnecté avec succès.");
+                } else {
+                    alert("Erreur lors de la déconnexion.");
+                }
+            } catch (error) {
+                console.error('Erreur lors de la déconnexion:', error);
+                alert("Erreur lors de la déconnexion.");
+            }
         }
+
         
-        // Fonction pour rediriger vers les challenges selon la catégorie
-        function handleChallengeNavigation(category = null) {
-            const userId = localStorage.getItem("user_id");
-            
-            if (!userId) {
-                alert("Veuillez vous connecter pour accéder aux challenges.");
+        // 🔧 FONCTION CORRIGÉE : Vérification d'authentification via API au lieu de localStorage
+        async function handleChallengeNavigation(category = null) {
+            try {
+                // Vérifier l'authentification via l'API au lieu du localStorage
+                const response = await fetch('/api/auth/me', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    alert("Veuillez vous connecter pour accéder aux challenges.");
+                    window.location.href = "/login";
+                    return;
+                }
+                
+                // Si utilisateur connecté, rediriger vers les challenges
+                const categoryRoutes = {
+                    'web': '/dashboard-web',
+                    'reverse': '/dashboard-reverse', 
+                    'forensics': '/dashboard-forensics',
+                    'crypto': '/dashboard-crypto',
+                    'network': '/dashboard-network',
+                    'stego': '/dashboard-stego'
+                };
+                
+                // Rediriger vers la page appropriée
+                if (category && categoryRoutes[category]) {
+                    window.location.href = categoryRoutes[category];
+                } else {
+                    // Route par défaut pour tous les challenges
+                    window.location.href = '/dashboard-web';
+                }
+                
+            } catch (error) {
+                console.error('Erreur lors de la vérification d\'authentification:', error);
+                alert("Erreur de connexion. Veuillez vous reconnecter.");
                 window.location.href = "/login";
-                return;
-            }
-            
-            // Mapping des catégories vers les routes
-            const categoryRoutes = {
-                'web': '/dashboard-web',
-                'reverse': '/dashboard-reverse', 
-                'forensics': '/dashboard-forensics',
-                'crypto': '/dashboard-crypto',
-                'network': '/dashboard-network',
-                'stego': '/dashboard-stego'
-            };
-            
-            // Rediriger vers la page appropriée
-            if (category && categoryRoutes[category]) {
-                window.location.href = categoryRoutes[category];
-            } else {
-                // Route par défaut pour tous les challenges
-                window.location.href = '/dashboard-web';
             }
         }
 
